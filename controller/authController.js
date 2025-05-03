@@ -1,7 +1,9 @@
-import userModel from "../models/userModel";
+import userModel from "../models/userModel.js";
+import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
 
 export const signUp = async (req, res)=>{
-    const { name, emaial, password } = req.body;
+    const { name, email, password } = req.body;
     if(!name || !email || !password){
         return res.json({success: false, message: 'Missing Details'})
     }
@@ -14,28 +16,27 @@ export const signUp = async (req, res)=>{
         }
     
 
-const hashedPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password, 10)
 
-//create a new user
-const user = new userModel({name, email, password: hashedPassword});
-await user.save(); //save in the db
+        //create a new user
+        const user = new userModel({name, email, password: hashedPassword});
+        await user.save(); //save in the db
 
-//generate a token
-const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'});
+        //generate a token
+        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'});
 
-//sending to user by adding it in the cookie
-res.cookie('token', token, {
-httpOnly: true,
-secure: process.env.NODE_ENV === 'production',
-sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strick', maxAge: 7 * 24 * 60 * 1000
-});
+        //sending to user by adding it in the cookie
+        res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strict',
+        maxAge: 7 * 24 * 60 * 1000
+        });
 
-return res.json({success: true});
-
-
-   } catch (error) {
+        return res.json({success: true});
+    } catch (error) {
        res.json({success: false, message: error.message})
-   }
+       }
 }
 
 export const login = async (req, res)=>{
@@ -57,21 +58,22 @@ export const login = async (req, res)=>{
             return res.json({success:false, message: 'invalid password'})
         }
 
-//generate a token to authenticate user and log them in.
-const token = JsonWebTokenError.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'});
+        //generate a token to authenticate user and log them in.
+        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: '7d'});
 
-//sending to user by adding it in the cookie
-res.cookie('token', token, {
-httpOnly: true,
-secure: process.env.NODE_ENV === 'production',
-sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strick', maxAge: 7 * 24 * 60 * 1000
-})
+        //sending to user by adding it in the cookie
+        res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strict',
+        maxAge: 7 * 24 * 60 * 1000
+        })
 
-  return res.json({success: true});
+        return res.json({success: true});
 
     } catch (error) {
-      return res.json({success: false, message: error.message})
- }
+            return res.json({success: false, message: error.message})
+        }
 }
 
 export const logout = async (req, res)=>{
@@ -79,8 +81,7 @@ export const logout = async (req, res)=>{
         res.clearcookie('token', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV == 'production' ? 
-            'none' : 'strick',
+            sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strict',
         })
 
         return res.json({success: true, message: "logged Out"})
