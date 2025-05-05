@@ -4,6 +4,7 @@ import 'dotenv/config';
 import cookieParser from "cookie-parser";
 import connectDB from "./config/mongo-connection.js"; 
 import authRouter from "./routes/authRoutes.js"
+import userRouter from "./routes/userRoutes.js";
 // import bookingRoutes from "./routes/bookings.js";     // optional: your API routes
 
 const app = express();
@@ -17,7 +18,8 @@ app.use(cookieParser());
 app.use(cors({ origin: 'https://your-frontend.vercel.app', credentials: true }));
 
 app.get('/', (req, res) => res.send("✅ App is running"));
-app.use('/api/auth', authRouter)
+app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
 
 // app.use('/api/bookings', bookingRoutes); // optional: add routes
 
