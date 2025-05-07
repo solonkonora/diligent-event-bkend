@@ -4,10 +4,16 @@ import jwt from "jsonwebtoken";
 import transporter from "../config/nodemailer.js";
 
 export const signUp = async (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
+  const { name, email, password, role } = req.body;
+  if (!name || !email || !password ||!role) {
     return res.json({ success: false, message: "Missing Details" });
   }
+
+  // Only allow specific roles to sign up
+  if (role !== "admin") {
+    return res.status(403).json({ success: false, message: "Unauthorized signup" });
+  }
+
   try {
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
