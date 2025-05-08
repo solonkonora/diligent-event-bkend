@@ -52,6 +52,7 @@ export const signUp = async (req, res) => {
     await transporter.sendMail(mailOptions);
 
     return res.json({ success: true });
+    
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
@@ -173,7 +174,7 @@ export const verifyEmail = async (req, res) => {
 };
 
 //check if user is authenticated
-export const isAccountAuthenticated = async (req, res)=>{
+export const isAuthenticated = async (req, res)=>{
     try {
         return res.json({ success: true});
     }  catch (error) {

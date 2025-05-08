@@ -1,5 +1,4 @@
 import userModel from "../models/userModel.js";
-import { isAccountVerified } from "./authController";
 
 export const getUserData = async (req, res)=>{
     try {
